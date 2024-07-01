@@ -1,6 +1,6 @@
 <?php
 
-function str_replace_marker($a, $s, $b, $e) {
+function str_replace_marker($s, $a, $b, $e) {
   preg_match_all('/' . preg_quote($b) . '(.*?)' . preg_quote($e) . '/', $s, $g, PREG_OFFSET_CAPTURE);
 
   $k = array_keys($a);
@@ -31,7 +31,7 @@ function test($msg, $a, $s, $b, $e) {
   echo "\n";
   echo $msg;
   echo "\n";
-  echo str_replace_marker($a, $s, $b, $e);
+  echo str_replace_marker($s, $a, $b, $e);
   echo "\n";
   echo "\n";
 }
