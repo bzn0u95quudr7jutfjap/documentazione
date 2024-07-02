@@ -3,8 +3,13 @@
 require_once __DIR__ . '/strings.php';
 
 //*
-function test($m, $f, $a, $c) {
-  echo "[$f]: $m: " . ($c(fn () => $f(...$a)) ? 'OK' : 'ERR') . "\n";
+function test($m, $f, $a, $c, $h) {
+  try {
+    $e = $c($f(...$a));
+  } catch (ErrorException $e) {
+    $e = $h($e);
+  }
+  echo "[$f]: $m: " . ($e ? 'OK' : 'ERR') . "\n";
 }
 
 test(
@@ -15,9 +20,8 @@ test(
     ['a' => 'A', 'b' => 'B'],
     '{', '}',
   ],
-  function ($f) {
-    return $f() === 'ABc';
-  }
+  fn ($a) => $a === 'ABc',
+  fn () => false,
 );
 
 test(
@@ -28,13 +32,8 @@ test(
     ['a' => 'A'],
     '{', '}',
   ],
-  function ($f) {
-    try {
-      $f();
-    } catch (ErrorException $e) {
-      return $e->getCode() & 1;
-    }
-  }
+  fn () => false,
+  fn ($e) => $e->getCode() & 1,
 );
 
 test(
@@ -45,13 +44,8 @@ test(
     ['a' => 'A', 'b' =>  'B', 'c' => 'C'],
     '{', '}',
   ],
-  function ($f) {
-    try {
-      $f();
-    } catch (ErrorException $e) {
-      return $e->getCode() & 2;
-    }
-  }
+  fn () => false,
+  fn ($e) => $e->getCode() & 2,
 );
 
 test(
@@ -62,13 +56,8 @@ test(
     ['a' => 'A', 'c' => 'C'],
     '{', '}',
   ],
-  function ($f) {
-    try {
-      $f();
-    } catch (ErrorException $e) {
-      return $e->getCode() & (1 | 2);
-    }
-  }
+  fn () => false,
+  fn ($e) => $e->getCode() & (1 | 2),
 );
 
 test(
@@ -79,13 +68,8 @@ test(
     ['a' => 'A', 'b' => [0]],
     '{', '}',
   ],
-  function ($f) {
-    try {
-      $f();
-    } catch (ErrorException $e) {
-      return $e->getCode() & 4;
-    }
-  }
+  fn () => false,
+  fn ($e) => $e->getCode() & 4,
 );
 
 //*/
